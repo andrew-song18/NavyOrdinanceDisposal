@@ -8,18 +8,21 @@
 #week 6: game class created, mine and user collison now works
 #week 7: created shell class, figured out code was broken because failed to intilialize shells to emerge from mine after explosion
 #week 8: Blitting and using images to replace simple surrogate polygons, emphasizing aesthetic gameplay.
-#week 9: scoreboard, TBD must blit turtle,landmines, bg.color and create countdown timer.
+#week 9: scoreboard, TBD must blit turtle,landmines,background. Customize
 
 #import libraries
 
-import os
 import random
 import time
-import turtle
+import turtle 
+
+bgTurtle = turtle
+screenTurtle = bgTurtle.getscreen()
+screenTurtle.bgpic("ocean.gif")
 
 turtle.fd(0)
 turtle.speed(0)
-turtle.bgcolor("white")
+turtle.bgcolor('blue')
 turtle.ht()
 turtle.setundobuffer(1)
 turtle.tracer(0)
@@ -66,7 +69,12 @@ class Sprite(turtle.Turtle):
 class Player(Sprite):
 	def __init__(self, spriteshape, color, startx, starty):
 		Sprite.__init__(self, spriteshape, color, startx, starty)
-		self.shapesize(stretch_wid=0.6, stretch_len=1.1, outline=None)
+		s = turtle.Screen()
+		image = "BattleShip.gif"
+		s.addshape(image)
+		self.shape(image)
+		s.bgcolor("black")
+		self.shapesize(stretch_wid=1.8, stretch_len=1.2, outline=None)
 		self.speed = 5
 		self.lives = 3
 
@@ -85,8 +93,13 @@ class Landmine(Sprite):
 		self.speed = 0
 		self.setheading(random.randint(0,360))
 
-		
-class shell(Sprite):
+class Torpedo(Sprite):
+	def __init__(self, spriteshape, color, startx, starty):
+		Sprite.__init__(self, spriteshape, color, startx, starty)
+		self.speed = 2
+		self.setheading(random.randint(0,360))
+
+class Shell(Sprite):
 	def __init__(self, spriteshape, color, startx, starty):
 		Sprite.__init__(self, spriteshape, color, startx, starty)
 		self.shapesize(stretch_wid=0.1, stretch_len=0.1, outline=None)
@@ -106,19 +119,18 @@ class shell(Sprite):
 		if self.frame > 15:
 			self.frame = 0
 			self.goto(-1000, -1000)
-			
+
 class Game():
 	def __init__(self):
-		self.level = 1
-		self.score = 0
+		self.level = 0
+		self.score = 1
 		self.state = "playing"
 		self.pen = turtle.Turtle()
-		self.lives = 3
 		
 	def draw_border(self):
 		#Draw border
 		self.pen.speed(0)
-		self.pen.color("gray")
+		self.pen.color("white")
 		self.pen.pensize(3)
 		self.pen.penup()
 		self.pen.goto(-300, 300)
@@ -132,7 +144,7 @@ class Game():
 		
 	def show_status(self):
 		self.pen.undo()
-		msg = "Score: %s" %(self.score)
+		msg = "Landmines: %s" %(self.score+19)
 		self.pen.penup()
 		self.pen.goto(-50, 310)
 		self.pen.write(msg, font=("Times New Roman", 18, "normal"))
@@ -144,24 +156,28 @@ game.draw_border()
 game.show_status()
 
 player = Player("triangle", "black", -160, 0)
-#Landmine = Landmine("circle", "red", -100, 0)
 
 Landmines =[]
-for i in range(12):
-	Landmines.append(Landmine("circle", "blue", -150, 0))
+for i in range(10):
+	Landmines.append(Landmine("square", "blue", -120, 0))
+
+Torpedoes =[]
+for i in range(3):
+	Torpedoes.append(Torpedo("triangle", "red", -120, 0))
 
 shells = []
 for i in range(45):
-	shells.append(shell("circle", "orange", 10, 0))
-
+	shells.append(Shell("circle", "orange", 10, 0))
 
 #Keyboard bindings
-turtle.onkey(player.turn_left, "Left")
-turtle.onkey(player.turn_right, "Right")
+turtle.onkey(player.turn_left, "Right")
+turtle.onkey(player.turn_right, "Left")
 turtle.onkey(player.decelerate, "Down")
 turtle.listen()
 
-#Countdown Timer
+# screen = pygame.display.set_mode([800, 800], 0, 32)
+# image1 = pygame.image.load('ocean.jpg')
+# screen.blit(image1, [200, 200])
 
 #Main game loop
 while True:
@@ -178,13 +194,30 @@ while True:
 			x = random.randint(-250, 250)
 			y = random.randint(-250, 250)
 			Landmine.goto(x, y)
-			game.score += 100
+			game.score += 1
+			game.show_status()
+			for shell in shells:
+				shell.explode(player.xcor(), player.ycor())
+
+	for Torpedo in Torpedoes:
+		Torpedo.move()
+		
+		#Check for a trigger with player
+		if player.is_collision(Torpedo):
+			x = random.randint(-250, 250)
+			y = random.randint(-250, 250)
+			Torpedo.goto(x, y)
+			game.score -=10
 			game.show_status()
 			for shell in shells:
 				shell.explode(player.xcor(), player.ycor())
 
 	for shell in shells:
-		shell.move()
+		shell.move() 
+
+
+
+
     
 
 
