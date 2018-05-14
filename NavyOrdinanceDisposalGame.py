@@ -24,10 +24,11 @@ screenTurtle.bgpic("ocean.gif")
 #turtle characteristics
 turtle.fd(0)
 turtle.speed(0)
-turtle.bgcolor('blue')
 turtle.ht()
 turtle.setundobuffer(1)
 turtle.tracer(0)
+
+#turtle setup cited from Christian's Blog
 
 #create superclass of sprites as all subclasses share similiar characteristics
 class Sprite(turtle.Turtle):
@@ -197,10 +198,6 @@ turtle.onkey(player.turn_right, "Left")
 turtle.onkey(player.decelerate, "Down")
 turtle.listen()
 
-# screen = pygame.display.set_mode([800, 800], 0, 32)
-# image1 = pygame.image.load('ocean.jpg')
-# screen.blit(image1, [200, 200])
-
 #main game loop
 while True:
 	turtle.update()
@@ -237,8 +234,12 @@ while True:
 	for shell in shells:
 		shell.move() 
 
-#game is infinite
+#game is infinite until user quits
 
-    
+#image citations URLs: 
+#submarine: https://thumbs.gfycat.com/PleasantHeartfeltIslandwhistler-max-1mb.gif 
+#battleship: https://media.giphy.com/media/uLoxQ8354tLnW/giphy.gif
+#underwater mine: http://www.gifmania.co.uk/Objects-Animated-Gifs/Animated-Weapons/Underwater-Mines/Sea-Mine-57125.gif
+#background sea: https://media.giphy.com/media/YJY1XgC19hY6Q/giphy.gif 
 
 
